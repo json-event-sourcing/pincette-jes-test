@@ -54,7 +54,7 @@ public class Application {
   }
 
   @SuppressWarnings("squid:S106") // Not logging.
-  private static void report(
+  public static void report(
       final String filename,
       final JsonObject command,
       final JsonObject expected,

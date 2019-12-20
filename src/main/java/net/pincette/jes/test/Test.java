@@ -50,6 +50,7 @@ import java.util.Set;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
+import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
@@ -201,7 +202,8 @@ public class Test {
    *     ordered by their filename.
    * @param kafkaConfig the Kafka configuration.
    * @param environment the environment tag, which is appended to the command and reply topics.
-   * @param report the reporter, which is called for each test.
+   * @param report the reporter, which is called for each test. This is where you can create the
+   *     structure of your application.
    * @return The outcome of all the tests. If at least one test fails the result will be <code>false
    *     </code>.
    * @since 1.0
@@ -211,6 +213,30 @@ public class Test {
       final Properties kafkaConfig,
       final String environment,
       final Report report) {
+    return run(directory, kafkaConfig, environment, report, null);
+  }
+
+  /**
+   * Runs a test set in a directory.
+   *
+   * @param directory the test directory. It should have the subdirectories "commands" and
+   *     "replies", which should have an equal number of JSON files in them. The files will be
+   *     ordered by their filename.
+   * @param kafkaConfig the Kafka configuration.
+   * @param environment the environment tag, which is appended to the command and reply topics.
+   * @param report the reporter, which is called for each test.
+   * @param buildBefore if this is not <code>null</code> it is called before running the tests. This
+   *     is where you can create the structure of your application.
+   * @return The outcome of all the tests. If at least one test fails the result will be <code>false
+   *     </code>.
+   * @since 1.0.1
+   */
+  public static boolean run(
+      final Path directory,
+      final Properties kafkaConfig,
+      final String environment,
+      final Report report,
+      final UnaryOperator<StreamsBuilder> buildBefore) {
     final List<Pair<String, JsonObject>> commands = loadCommands(directory);
     final List<JsonObject> replies = loadReplies(directory);
 
@@ -228,6 +254,10 @@ public class Test {
     final Map<String, JsonObject> perCorr = perCorrelationId(commandStream(commands));
     final List<JsonObject> results = new ArrayList<>(asList(new JsonObject[replies.size()]));
     final KafkaStreams[] streams = new KafkaStreams[1];
+
+    if (buildBefore != null) {
+      buildBefore.apply(builder);
+    }
 
     types(commandStream(commands))
         .forEach(

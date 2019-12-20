@@ -6,7 +6,7 @@
 
   <groupId>net.pincette</groupId>
   <artifactId>pincette-jes-test</artifactId>
-  <version>1.0</version>
+  <version>1.0.1</version>
   <name>pincette-jes-test</name>
   <description>Test Tool For JSON Event Sourcing</description>
   <url>https://github.com/wdonne/pincette-jes-test</url>
