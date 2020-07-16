@@ -10,22 +10,22 @@ import static java.util.logging.Logger.getGlobal;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
-import static javax.json.Json.createDiff;
-import static javax.json.Json.createObjectBuilder;
-import static javax.json.Json.createReader;
 import static net.pincette.jes.util.JsonFields.CORR;
 import static net.pincette.jes.util.JsonFields.ID;
 import static net.pincette.jes.util.JsonFields.JWT;
-import static net.pincette.jes.util.JsonFields.JWT_SUB;
 import static net.pincette.jes.util.JsonFields.SEQ;
+import static net.pincette.jes.util.JsonFields.SUB;
 import static net.pincette.jes.util.JsonFields.TIMESTAMP;
 import static net.pincette.jes.util.JsonFields.TYPE;
 import static net.pincette.jes.util.Kafka.createReliableProducer;
 import static net.pincette.jes.util.Kafka.send;
 import static net.pincette.jes.util.Streams.streamsConfig;
+import static net.pincette.json.JsonUtil.copy;
+import static net.pincette.json.JsonUtil.createDiff;
+import static net.pincette.json.JsonUtil.createObjectBuilder;
+import static net.pincette.json.JsonUtil.createReader;
 import static net.pincette.util.Builder.create;
 import static net.pincette.util.Collections.set;
-import static net.pincette.util.Json.copy;
 import static net.pincette.util.Pair.pair;
 import static net.pincette.util.StreamUtil.composeAsyncStream;
 import static net.pincette.util.StreamUtil.rangeExclusive;
@@ -152,8 +152,7 @@ public class Test {
     return create(() -> createObjectBuilder(json))
         .update(b -> b.add(CORR, randomUUID().toString()))
         .updateIf(
-            b -> !json.containsKey(JWT),
-            b -> b.add(JWT, createObjectBuilder().add(JWT_SUB, "system")))
+            b -> !json.containsKey(JWT), b -> b.add(JWT, createObjectBuilder().add(SUB, "system")))
         .build()
         .build();
   }

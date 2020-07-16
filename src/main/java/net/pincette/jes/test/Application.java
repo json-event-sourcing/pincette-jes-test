@@ -5,7 +5,7 @@ import static java.util.Arrays.stream;
 import static net.pincette.jes.test.Test.run;
 import static net.pincette.jes.util.Configuration.loadDefault;
 import static net.pincette.jes.util.Streams.fromConfig;
-import static net.pincette.util.Json.string;
+import static net.pincette.json.JsonUtil.string;
 import static net.pincette.util.Util.tryToGetSilent;
 
 import com.typesafe.config.Config;
